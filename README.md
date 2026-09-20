@@ -18,7 +18,11 @@
 > built standalone) and the shipped `lib/` artifacts are the verified 1.3.1 build
 > patched in place.
 
-# @deepseek-ai/dsh-client-ui-aqua
+# dsh-client-ui-aqua — Aqua glassmorphism theme for DeepSeek Harness
+
+> Upstream package name: `@deepseek-ai/dsh-client-ui-aqua` (the author's monorepo
+> name). The package published to npm is the unscoped `dsh-client-ui-aqua`, and that
+> is the name this fork keeps so it stays a drop-in replacement.
 
 English | [中文](README.zh.md)
 
@@ -47,47 +51,76 @@ Aqua is a highly customizable glassmorphism theme for the DeepSeek Harness web U
 
 ## Installation
 
-### Option 1: npm one-liner (recommended)
+### From this repository (recommended)
 
 ```sh
-dsh plugin --profile web add dsh-client-ui-aqua
+dsh plugin --profile web add github:<owner>/<repo>
 ```
 
-Installs the latest version from npm and registers it as a profile plugin layer (`dsh.bundle` patch) — works on every platform. Reload the web UI and it is on.
+Installs this patched build and registers it as a profile plugin layer through the
+package's `dsh.bundle.patch` — works on every platform. The command shells out to
+`git` and reaches `github.com`, so a proxy may be needed on restricted networks.
 
-### Option 2: GitHub installer (fallback)
-
-No npm account and no git needed (falls back to a plain zip download).
-
-**Windows (one command):**
-
-```powershell
-powershell -ExecutionPolicy Bypass -Command "Invoke-WebRequest 'https://github.com/WYH66666666/DSH-Transparent-UI-Plugin/raw/main/install.ps1' -OutFile install.ps1; .\install.ps1"
-```
-
-Installs the **latest release** by default. The script links the plugin into the profile's `node_modules` and registers `ui-aqua` in `cordis.patch.yml` (idempotent — safe to run again).
-
-Pin a version or track the dev branch:
-
-```powershell
-.\install.ps1 -Version 'v1.1.0'   # a specific release
-.\install.ps1 -Version 'main'     # the development branch
-```
-
-**macOS / Linux (manual, three steps):**
+Verify the layer composed, then restart the host:
 
 ```sh
-git clone --depth 1 --branch v1.1.0 https://github.com/WYH66666666/DSH-Transparent-UI-Plugin.git
-ln -s "$PWD/DSH" "$DSH_HOME/profiles/node_modules/@deepseek-ai/dsh-client-ui-aqua"
+dsh --profile web --dump-config     # expect an "# == dsh-client-ui-aqua" layer
+dsh web                             # restart; the theme is on by default
 ```
 
-then append to `$DSH_HOME/profiles/web/cordis.patch.yml`:
+### From a local clone
 
-```yaml
-- insert:
-    - id: ui-aqua
-      name: '@deepseek-ai/dsh-client-ui-aqua'
+```sh
+git clone https://github.com/<owner>/<repo>.git
+dsh plugin --profile web add link:/absolute/path/to/<repo>
 ```
+
+### Uninstall
+
+```sh
+dsh plugin --profile web remove dsh-client-ui-aqua
+```
+
+### Requirements
+
+DSH **0.1.2-rc.1** — the line this fork is verified against (host Node v22.21.1).
+Installing appends `dsh-client-ui-aqua` to `dsh.profile.bundles` in the profile,
+so the host must be **restarted** before the theme loads.
+
+### ⚠️ Do not install the bare package name from npm
+
+```sh
+dsh plugin --profile web add dsh-client-ui-aqua   # ← installs the UNPATCHED upstream 1.3.1
+```
+
+That bare name resolves to upstream's npm release, which does **not** work on the
+DSH 0.1.2 line: its browser half imports `@deepseek-ai/dsh-client-runtime`, a
+package DSH 0.1.2 removed, and its settings card throws on every page load. Use
+the `github:` form above until upstream ships a fix. Details in
+[REPAIR.md](REPAIR.md).
+
+## DSH plugin spec conformance
+
+- **Host half exports `apply(ctx)`** — `lib/index.js` ships `export { apply }` with
+  `function apply(ctx)`. It registers the settings namespace that the browser
+  half's card is keyed by (`aqua`), which is what makes the master switch
+  dispatchable on DSH 0.1.2.
+- **Browser half exports `apply` + `inject`** — `lib/client.js` is a lazy-CJS
+  `window.__ModuleLoader__.load({ id: "dsh-client-ui-aqua", factory })` bundle whose
+  factory returns `exports.apply` and `exports.inject = ['theme', 'slots', 'locale']`.
+- **Bundle patch** — `dsh.bundle.patch` points at `cordis.patch.yml`, which inserts
+  the single loader row `{ id: ui-aqua, name: 'dsh-client-ui-aqua' }`. The package
+  name matches that row, so one `dsh plugin add` both installs and mounts the plugin.
+- **Browser roster** — `dsh.client` declares `platform: web` plus the module ids the
+  web shell must have loaded first.
+- **No build step** — prebuilt artifacts ship in `lib/`, so installation never runs a
+  package script.
+
+### Legacy installer (upstream, unsupported here)
+
+Upstream's `install.ps1` and its manual symlink recipe install the **unpatched**
+build, and they point at the old repository. They are kept in this tree for
+provenance only; they are not supported on DSH 0.1.2-rc.1.
 
 ## Usage
 

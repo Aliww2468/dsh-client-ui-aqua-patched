@@ -14,7 +14,10 @@
 > `src/` 的改动此处未经类型检查（上游仓库无法独立构建），随包 `lib/` 产物是经过验证的
 > 1.3.1 构建就地打补丁后的结果。
 
-# @deepseek-ai/dsh-client-ui-aqua
+# dsh-client-ui-aqua —— DeepSeek Harness 玻璃质感主题
+
+> 上游包名：`@deepseek-ai/dsh-client-ui-aqua`（作者 monorepo 内的名字）。发布到 npm 的是
+> 不带 scope 的 `dsh-client-ui-aqua`，本分支沿用该名字，以便作为可直接替换的版本使用。
 
 [English](README.md) | 中文
 
@@ -42,47 +45,68 @@ Aqua 是一层高自由度的玻璃质感主题，套在 DeepSeek Harness 网页
 
 ## 安装
 
-### 方式一：npm 一键安装（推荐）
+### 从本仓库安装（推荐）
 
 ```sh
-dsh plugin --profile web add dsh-client-ui-aqua
+dsh plugin --profile web add github:<owner>/<repo>
 ```
 
-从 npm 安装最新版，自动注册为 profile 插件层（`dsh.bundle` 补丁），所有平台通用。刷新 Web 界面即可。
+安装本修补版，并通过包内的 `dsh.bundle.patch` 自动注册为 profile 插件层，所有平台通用。
+该命令会调用 `git` 访问 `github.com`，受限网络下可能需要代理。
 
-### 方式二：GitHub 安装器（备用）
-
-不需要 npm、不需要 git（自动退回 zip 下载）。
-
-**Windows（一条命令）：**
-
-```powershell
-powershell -ExecutionPolicy Bypass -Command "Invoke-WebRequest 'https://github.com/WYH66666666/DSH-Transparent-UI-Plugin/raw/main/install.ps1' -OutFile install.ps1; .\install.ps1"
-```
-
-默认安装**最新发布版**。脚本会把插件链接进 profile 的 `node_modules`，并在 `cordis.patch.yml` 里登记 `ui-aqua`（幂等，重复跑不会重复登记）。
-
-指定版本或跟随开发分支：
-
-```powershell
-.\install.ps1 -Version 'v1.1.0'   # 指定某个发布版
-.\install.ps1 -Version 'main'     # 开发分支
-```
-
-**macOS / Linux（手动，三步）：**
+确认层已组合，然后重启宿主：
 
 ```sh
-git clone --depth 1 --branch v1.1.0 https://github.com/WYH66666666/DSH-Transparent-UI-Plugin.git
-ln -s "$PWD/DSH" "$DSH_HOME/profiles/node_modules/@deepseek-ai/dsh-client-ui-aqua"
+dsh --profile web --dump-config     # 应能看到 "# == dsh-client-ui-aqua" 这一层
+dsh web                             # 重启；主题默认开启
 ```
 
-然后往 `$DSH_HOME/profiles/web/cordis.patch.yml` 追加：
+### 从本地克隆安装
 
-```yaml
-- insert:
-    - id: ui-aqua
-      name: '@deepseek-ai/dsh-client-ui-aqua'
+```sh
+git clone https://github.com/<owner>/<repo>.git
+dsh plugin --profile web add link:/本仓库的绝对路径
 ```
+
+### 卸载
+
+```sh
+dsh plugin --profile web remove dsh-client-ui-aqua
+```
+
+### 环境要求
+
+DSH **0.1.2-rc.1**（本分支的验证基线，宿主 Node v22.21.1）。安装会往 profile 的
+`dsh.profile.bundles` 追加 `dsh-client-ui-aqua`，因此**必须重启宿主**主题才会加载。
+
+### ⚠️ 不要安装 npm 上的裸包名
+
+```sh
+dsh plugin --profile web add dsh-client-ui-aqua   # ← 装到的是上游未修复的 1.3.1
+```
+
+裸包名解析到上游的 npm 发布版，它在 DSH 0.1.2 线**无法工作**：浏览器半引用了 DSH 0.1.2
+已移除的 `@deepseek-ai/dsh-client-runtime`，且其设置卡片每次加载都会抛异常。请使用上面的
+`github:` 形式，直到上游修好为止。详见 [REPAIR.md](REPAIR.md)。
+
+## DSH 插件规范符合性
+
+- **宿主半导出 `apply(ctx)`** —— `lib/index.js` 提供 `export { apply }` 与
+  `function apply(ctx)`：它注册浏览器半卡片所依的 key（设置命名空间 `aqua`），这正是
+  DSH 0.1.2 上总开关能被派发的原因。
+- **浏览器半导出 `apply` + `inject`** —— `lib/client.js` 是 lazy-CJS 的
+  `window.__ModuleLoader__.load({ id: "dsh-client-ui-aqua", factory })` 产物，工厂返回
+  `exports.apply` 与 `exports.inject = ['theme', 'slots', 'locale']`。
+- **bundle 补丁** —— `dsh.bundle.patch` 指向 `cordis.patch.yml`，其中插入唯一的加载器行
+  `{ id: ui-aqua, name: 'dsh-client-ui-aqua' }`；包名与该行一致，因此一条
+  `dsh plugin add` 即可同时完成安装与挂载。
+- **浏览器 roster** —— `dsh.client` 声明 `platform: web`，并列出需先加载的模块 id。
+- **无构建步骤** —— `lib/` 随包提供预构建产物，安装过程不执行任何包脚本。
+
+### 上游遗留安装器（本分支不支持）
+
+上游的 `install.ps1` 与手动软链方案安装的是**未修复**的构建，且指向旧仓库。本仓库保留它们
+仅为追溯出处，在 DSH 0.1.2-rc.1 上不受支持。
 
 ## 使用
 
