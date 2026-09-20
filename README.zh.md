@@ -6,7 +6,7 @@
 > 诊断、逐项改动、证据与测试脚本见 **[REPAIR.md](REPAIR.md)**。
 >
 > ```sh
-> dsh plugin --profile web add github:<owner>/<repo>   # 之后重启 dsh web
+> dsh plugin --profile web add github:Aliww2468/dsh-client-ui-aqua-patched   # 之后重启 dsh web
 > ```
 >
 > 与上游作者无隶属、无背书、无维护关系。按上游仓库 `LICENSE` 以
@@ -48,7 +48,7 @@ Aqua 是一层高自由度的玻璃质感主题，套在 DeepSeek Harness 网页
 ### 从本仓库安装（推荐）
 
 ```sh
-dsh plugin --profile web add github:<owner>/<repo>
+dsh plugin --profile web add github:Aliww2468/dsh-client-ui-aqua-patched
 ```
 
 安装本修补版，并通过包内的 `dsh.bundle.patch` 自动注册为 profile 插件层，所有平台通用。
@@ -64,7 +64,7 @@ dsh web                             # 重启；主题默认开启
 ### 从本地克隆安装
 
 ```sh
-git clone https://github.com/<owner>/<repo>.git
+git clone https://github.com/Aliww2468/dsh-client-ui-aqua-patched.git
 dsh plugin --profile web add link:/本仓库的绝对路径
 ```
 

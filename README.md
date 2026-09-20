@@ -8,7 +8,7 @@
 > changes, the evidence and the test harness.
 >
 > ```sh
-> dsh plugin --profile web add github:<owner>/<repo>   # then restart dsh web
+> dsh plugin --profile web add github:Aliww2468/dsh-client-ui-aqua-patched   # then restart dsh web
 > ```
 >
 > Not affiliated with, endorsed by, or maintained by the upstream author.
@@ -54,7 +54,7 @@ Aqua is a highly customizable glassmorphism theme for the DeepSeek Harness web U
 ### From this repository (recommended)
 
 ```sh
-dsh plugin --profile web add github:<owner>/<repo>
+dsh plugin --profile web add github:Aliww2468/dsh-client-ui-aqua-patched
 ```
 
 Installs this patched build and registers it as a profile plugin layer through the
@@ -71,8 +71,8 @@ dsh web                             # restart; the theme is on by default
 ### From a local clone
 
 ```sh
-git clone https://github.com/<owner>/<repo>.git
-dsh plugin --profile web add link:/absolute/path/to/<repo>
+git clone https://github.com/Aliww2468/dsh-client-ui-aqua-patched.git
+dsh plugin --profile web add link:/absolute/path/to/dsh-client-ui-aqua-patched
 ```
 
 ### Uninstall
