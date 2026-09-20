@@ -1,15 +1,20 @@
 # PUBLISH.md — push this fork to GitHub
 
-Runbook for publishing this repository. Written to be executed verbatim once the
-account is authenticated. The three listing requirements are covered first.
+Runbook that was executed to publish this repository, kept as a record. The three
+listing requirements are covered first.
+
+**Status: executed.** Repository: <https://github.com/Aliww2468/dsh-client-ui-aqua-patched>
+(public, default branch `main`). The `<owner>/<repo>` placeholders were resolved to
+`Aliww2468/dsh-client-ui-aqua-patched` in commit `0fdc993`, so the commands below are
+the historical recipe, not pending work.
 
 ## Requirements coverage
 
 | Requirement | Where it is satisfied | Status |
 |---|---|---|
-| GitHub topic **`dsh-plugin`** | `gh repo edit --add-topic dsh-plugin …` below; also mirrored into `package.json` → `keywords` | **pending** — can only be set after the repository exists |
-| README carries an install command of the form `dsh plugin --profile web add <package>` | `README.md` → `## Installation` → *From this repository*; `README.zh.md` → `## 安装` → *从本仓库安装* | done, minus the `<owner>/<repo>` placeholder |
-| Plugin exports an **`apply(ctx)`** module per the DSH plugin spec | host half `lib/index.js`: `export { apply }` / `function apply(ctx)`; browser half `lib/client.js`: `exports.apply` + `exports.inject = ['theme','slots','locale']` inside `window.__ModuleLoader__.load({ id: "dsh-client-ui-aqua", … })` | done and empirically verified |
+| GitHub topic **`dsh-plugin`** | `gh repo edit --add-topic dsh-plugin …` below; also mirrored into `package.json` → `keywords` | **done** — `dsh-plugin` plus six discovery topics, verified via `gh repo view --json repositoryTopics` |
+| README carries an install command of the form `dsh plugin --profile web add <package>` | `README.md` → `## Installation` → *From this repository*; `README.zh.md` → `## 安装` → *从本仓库安装* | **done** — verified from the published README through the API |
+| Plugin exports an **`apply(ctx)`** module per the DSH plugin spec | host half `lib/index.js`: `export { apply }` / `function apply(ctx)`; browser half `lib/client.js`: `exports.apply` + `exports.inject = ['theme','slots','locale']` inside `window.__ModuleLoader__.load({ id: "dsh-client-ui-aqua", … })` | **done** — byte-verified in the pushed tree and runtime-verified |
 
 Evidence for the third row: a throwaway DSH instance reported
 `loaded: […, dsh-client-ui-aqua, …]`, its `córdís` row registered the `aqua`
@@ -27,7 +32,9 @@ $env:HTTPS_PROXY = 'http://127.0.0.1:7890'
 $env:HTTP_PROXY  = 'http://127.0.0.1:7890'
 ```
 
-The repository itself already carries a repo-local `http.proxy` setting, so `git
+On the publishing machine `gh` had no config directory, so the stored Git credential was used
+directly instead of a fresh login (block below), and the commit author was set to that
+account. The repository itself already carries a repo-local `http.proxy` setting, so `git
 push` works without touching the global git config.
 
 The commit author is currently a placeholder. To make the commits yours:
@@ -70,10 +77,10 @@ gh repo view <owner>/dsh-client-ui-aqua-patched --json repositoryTopics
 
 `dsh-plugin` is the required one; the rest are for discovery.
 
-## 3. Replace the install-command placeholders (requirement 2)
+## 3. Replace the install-command placeholders (requirement 2) — done
 
-Both READMEs deliberately ship `github:<owner>/<repo>` so the command shape is
-already correct. Point it at the real repository:
+Both READMEs shipped `github:<owner>/<repo>` so the command shape was already correct;
+commit `0fdc993` points them at the real repository. Historical recipe:
 
 ```powershell
 $owner = gh api user --jq .login
