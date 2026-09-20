@@ -1,0 +1,8 @@
+# Repository-wide default: LF in the repository and in the working tree, so the
+# tree is reproducible on any platform.
+* text=auto eol=lf
+
+# Built artifacts must stay byte-for-byte identical to the audited build: their
+# SHA-256 hashes are recorded in REPAIR.md, and the whole point of this fork is
+# that the shipped bytes are the bytes that were tested. Never re-encode them.
+lib/*.js -text
