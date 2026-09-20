@@ -15,9 +15,9 @@ English | [中文](README.zh.md)
 
 Install it and the DSH web UI becomes frosted glass — the header, sidebar, composer, stats line and trajectory view turn into floating glass panes over a living fluid board or your own wallpaper. Flip one switch and the stock UI comes back exactly, with nothing left behind.
 
-## Install (copy-paste)
+## Install
 
-Profile: **`web`** — the browser UI profile. Three commands:
+Profile: **`web`** — the browser UI profile. Copy-paste, three commands:
 
 ```sh
 dsh plugin --profile web add github:Aliww2468/dsh-client-ui-aqua-patched
@@ -27,6 +27,43 @@ dsh web                             # restart the host; the theme is ON by defau
 
 `git` must be on `PATH` and `github.com` reachable (an HTTP proxy may be required). The plugin appends itself to `dsh.profile.bundles`. Controls are under [Usage](#usage); permissions, external services and compatibility under [Permissions, external services and compatibility](#permissions-external-services-and-compatibility).
 
+### From this repository (recommended)
+
+The block above is the whole thing: it installs this patched build and registers it as a
+profile plugin layer through the package's `dsh.bundle.patch`, on every platform.
+
+### From a local clone
+
+```sh
+git clone https://github.com/Aliww2468/dsh-client-ui-aqua-patched.git
+dsh plugin --profile web add link:/absolute/path/to/dsh-client-ui-aqua-patched
+```
+
+### Uninstall
+
+```sh
+dsh plugin --profile web remove dsh-client-ui-aqua
+```
+
+Then restart `dsh web`. Every visual effect is an effect handle disposed with the plugin,
+so the stock UI returns.
+
+### Requirements
+
+DSH **0.1.2-rc.1** — the line this fork is verified against (host Node v22.21.1).
+Installing appends `dsh-client-ui-aqua` to `dsh.profile.bundles`, so the host must be
+**restarted** before the theme loads.
+
+### ⚠️ Do not install the bare package name from npm
+
+```sh
+dsh plugin --profile web add dsh-client-ui-aqua   # ← installs the UNPATCHED upstream 1.3.1
+```
+
+That bare name resolves to upstream's npm release, which does **not** work on the DSH 0.1.2
+line: its browser half imports `@deepseek-ai/dsh-client-runtime`, a package DSH 0.1.2
+removed, and its settings card throws on every page load. Use the `github:` form above (or
+the local-clone form) until upstream ships a fix. Details in [REPAIR.md](REPAIR.md).
 ## What you get
 
 Everything below is **upstream's design**, carried over unchanged by this fork — this fork only repairs the three defects that stop it from loading (see [REPAIR.md](REPAIR.md)).

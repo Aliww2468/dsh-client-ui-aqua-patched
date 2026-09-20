@@ -13,9 +13,9 @@
 
 装上它，DSH 网页端立刻变成磨砂玻璃——顶栏、侧边栏、输入框、统计行与轨迹视图化作悬浮玻璃片，背景可以是流动的流体板，也可以是你自己的壁纸。关掉唯一的总开关，界面完全还原，不留任何残留。
 
-## 安装（可直接复制）
+## 安装
 
-Profile：**`web`**（浏览器界面所用的 profile）。三条命令：
+Profile：**`web`**（浏览器界面所用的 profile）。可直接复制，三条命令：
 
 ```sh
 dsh plugin --profile web add github:Aliww2468/dsh-client-ui-aqua-patched
@@ -25,6 +25,39 @@ dsh web                             # 重启宿主；主题默认开启
 
 需要 `git` 位于 `PATH` 且能访问 `github.com`（受限网络需要 HTTP 代理）。插件会把自身追加进 `dsh.profile.bundles`。各控件见[使用](#使用)；权限、外部服务与兼容性见[权限、外部服务与兼容性](#权限外部服务与兼容性)。
 
+### 从本仓库安装（推荐）
+
+上面那段就是全部：安装本修补版，并通过包内的 `dsh.bundle.patch` 自动注册为 profile 插件层，所有平台通用。
+
+### 从本地克隆安装
+
+```sh
+git clone https://github.com/Aliww2468/dsh-client-ui-aqua-patched.git
+dsh plugin --profile web add link:/本仓库的绝对路径
+```
+
+### 卸载
+
+```sh
+dsh plugin --profile web remove dsh-client-ui-aqua
+```
+
+然后重启 `dsh web`。所有视觉效果都是可释放的 effect，随插件一并回收，原生界面随之还原。
+
+### 环境要求
+
+DSH **0.1.2-rc.1**（本分支的验证基线，宿主 Node v22.21.1）。安装会往 profile 的
+`dsh.profile.bundles` 追加 `dsh-client-ui-aqua`，因此**必须重启宿主**主题才会加载。
+
+### ⚠️ 不要安装 npm 上的裸包名
+
+```sh
+dsh plugin --profile web add dsh-client-ui-aqua   # ← 装到的是上游未修复的 1.3.1
+```
+
+裸包名解析到上游的 npm 发布版，它在 DSH 0.1.2 线**无法工作**：浏览器半引用了 DSH 0.1.2
+已移除的 `@deepseek-ai/dsh-client-runtime`，且其设置卡片每次加载都会抛异常。请使用上面的
+`github:` 形式（或本地克隆形式），直到上游修好为止。详见 [REPAIR.md](REPAIR.md)。
 ## 它能给你什么
 
 以下全部是**上游的设计**，本分支原样沿用——本分支只修掉了导致它加载失败的三处缺陷（见 [REPAIR.md](REPAIR.md)）。
