@@ -21,6 +21,21 @@
 
 [English](README.md) | 中文
 
+## 一句话价值
+
+装上它，DSH 网页端立刻变成磨砂玻璃——顶栏、侧边栏、输入框、统计行与轨迹视图化作悬浮玻璃片，背景可以是流动的流体板，也可以是你自己的壁纸。关掉唯一的总开关，界面完全还原，不留任何残留。
+
+## 安装（可直接复制）
+
+Profile：**`web`**（浏览器界面所用的 profile）。三条命令：
+
+```sh
+dsh plugin --profile web add github:Aliww2468/dsh-client-ui-aqua-patched
+dsh --profile web --dump-config     # 校验：应出现 "# == dsh-client-ui-aqua" 这一层
+dsh web                             # 重启宿主；主题默认开启
+```
+
+需要 `git` 位于 `PATH` 且能访问 `github.com`（受限网络需要 HTTP 代理）。插件会把自身追加进 `dsh.profile.bundles`。各控件见[使用](#使用)；权限、外部服务与兼容性见[权限、外部服务与兼容性](#权限外部服务与兼容性)。
 # 注意⚠️⚠️⚠️（务必仔细阅读）：随着DSH版本更新，本人因学业繁忙无法及时为该插件适配新的API，请自行使用其他agent更换或修理，以免在安装该插件时出现崩溃问题
 
 Aqua 是一层高自由度的玻璃质感主题，套在 DeepSeek Harness 网页端。顶栏、侧边栏、输入框、统计行、轨迹视图都成了磨砂玻璃片,你还可以添加视频和图片作为背景。关掉开关就回到原生界面，不改 DSH 任何一行源码。
@@ -107,6 +122,49 @@ dsh plugin --profile web add dsh-client-ui-aqua   # ← 装到的是上游未修
 
 上游的 `install.ps1` 与手动软链方案安装的是**未修复**的构建，且指向旧仓库。本仓库保留它们
 仅为追溯出处，在 DSH 0.1.2-rc.1 上不受支持。
+## 可见的证明
+
+以下是**真实输出**，不是示意图：由 `tools/` 里那套零依赖测试夹具，在临时的 DSH 0.1.2-rc.1 实例（宿主 Node v22.21.1）上跑出，安装的是本仓库已发布的产物：
+
+```console
+$ dsh plugin --profile web add github:Aliww2468/dsh-client-ui-aqua-patched
++ dsh-client-ui-aqua github:Aliww2468/dsh-client-ui-aqua-patched
+
+$ node tools/cdp-aqua-test.mjs "http://127.0.0.1:<port>/?token=<token>" 15000
+DOM: {"title":"DeepSeek Harness","ambient":true,"fluidCanvas":true,"wallpaperLayer":true,"aquaStyleTags":1,"lsEnabled":null,"bodyChildren":25}
+EXCEPTIONS: []
+CONSOLE_ERRORS: []
+LOG_ERRORS: []
+RESULT: PASS
+
+$ node tools/cdp-eval.mjs "<url>" 12000 @tools/expr-toggle.js
+VALUE: {"cardText":"玻璃主题卡片 ... 总开关开启","foundToggle":true,
+        "appliedBefore":true,"switchedOff":true,"appliedAfterOff":false,
+        "canvasAfterOff":false,"flagAfterOff":"false",
+        "appliedAfterOn":true,"flagAfterOn":"true"}
+EXCEPTIONS: []
+```
+
+怎么读：主题层确实渲染了（`ambient`、`fluidCanvas`、`wallpaperLayer`，并注入一张样式表）；页面保持干净（无异常、无 console 错误、无日志错误）；总开关确实能把主题**关掉再打开**（`appliedAfterOff:false` → `appliedAfterOn:true`，且状态被持久化）。输出已裁剪至被断言的字段。
+
+`assets/1.png` – `assets/4.png` 是上游同款主题的截图，可作为视觉参考。想在自己机器上复现：先跑上面三条安装命令，再跑两条夹具命令，约一分钟，除 Node 与 Chrome 外无需其它依赖。
+## 权限、外部服务与兼容性
+
+以下结论审计自随包产物（`lib/client.js`、`lib/index.js`），即 REPAIR.md §3 中给出哈希的那份字节。
+
+| 问题 | 结论 |
+|---|---|
+| 运行时网络请求 | **无。** 浏览器半中 `fetch`、`XMLHttpRequest`、`WebSocket`、`EventSource`、`sendBeacon` 出现次数均为 0；宿主半不 import 任何模块，也不触网。 |
+| 文件 / 凭据 / Cookie | **无。** 不使用文件系统或凭据服务，不读 `document.cookie`，无 `eval` / `new Function`，不加载远程代码。 |
+| 实际触碰的内容 | 往页面注入一张 `<style>` 与若干装饰性 DOM 节点（氛围场景、壁纸层、边缘渐隐），并注册一个名为 `aqua` 的设置命名空间。效果仅此而已。 |
+| 存储的状态 | 仅 `localStorage` 中 `dsh.ui-aqua.*` 前缀的键（开关、模式、模糊度、磨砂度、背景、壁纸、鲸鱼、小鱼、网状、悬停、按下…）。自定义壁纸以 data URL 存在 `localStorage`，因此超大图片或视频可能触及浏览器存储配额。 |
+| 遥测 / 账号 | 无。没有统计上报、不需要账号、不需要 API key。 |
+| 安装期执行代码 | **无。** `package.json` 未声明 `install` / `postinstall` / `prepare`，且 `lib/` 随包提供预构建产物，因此 `dsh plugin add` 不会执行任何包脚本。 |
+| 外部服务 | 主题本身不依赖任何外部服务。安装过程需访问一次 GitHub 且需要 `git`；受限网络下需要 HTTP 代理。 |
+| 兼容性 | 仅在 **DSH 0.1.2-rc.1**（宿主 Node v22.21.1）上验证通过。上游的 peer 基线是 `^0.1.0-rc.5`，本分支未在其它 DSH 线上测试。上游已停止维护，未来 DSH 版本可能再次使其失效——建议把 `dump-config` 那一步固定进你的升级流程。 |
+| 卸载 | `dsh plugin --profile web remove dsh-client-ui-aqua` 后重启。所有视觉效果都是可释放的 effect，移除即回收，原生界面随之还原。 |
+| 许可证 | 上游**仓库是 AGPL-3.0**，而同一版本的 npm 包含的却是 MIT，这是上游自身的不一致（见 REPAIR.md §5）。本分支按 **AGPL-3.0-only** 分发。若 AGPL 与你的部署不相容，请不要安装。 |
+| 维护 | 一次性的社区修复，非上游维护。无任何担保；唯一可依赖的兼容性承诺是那两组产物哈希。 |
 
 ## 使用
 

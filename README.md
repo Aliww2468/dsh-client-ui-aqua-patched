@@ -26,6 +26,21 @@
 
 English | [中文](README.zh.md)
 
+## What it does, in one line
+
+Install it and the DSH web UI becomes frosted glass — the header, sidebar, composer, stats line and trajectory view turn into floating glass panes over a living fluid board or your own wallpaper. Flip one switch and the stock UI comes back exactly, with nothing left behind.
+
+## Install (copy-paste)
+
+Profile: **`web`** — the browser UI profile. Three commands:
+
+```sh
+dsh plugin --profile web add github:Aliww2468/dsh-client-ui-aqua-patched
+dsh --profile web --dump-config     # verify: an "# == dsh-client-ui-aqua" layer must appear
+dsh web                             # restart the host; the theme is ON by default
+```
+
+`git` must be on `PATH` and `github.com` reachable (an HTTP proxy may be required). The plugin appends itself to `dsh.profile.bundles`. Controls are under [Usage](#usage); permissions, external services and compatibility under [Permissions, external services and compatibility](#permissions-external-services-and-compatibility).
 # Notice ⚠️: As DSH has been updated, I am unable to promptly update the plugin with the new APIdue to my academic commitments. Please use an alternative agent to replace or repair it yourself to avoid crashes when installing this plugin.
 
 
@@ -121,6 +136,49 @@ the `github:` form above until upstream ships a fix. Details in
 Upstream's `install.ps1` and its manual symlink recipe install the **unpatched**
 build, and they point at the old repository. They are kept in this tree for
 provenance only; they are not supported on DSH 0.1.2-rc.1.
+## Visible proof
+
+Real output, not a mock-up — produced by the dependency-free harness in `tools/` against a throwaway DSH 0.1.2-rc.1 instance (host Node v22.21.1), with the published artifacts of this repository installed:
+
+```console
+$ dsh plugin --profile web add github:Aliww2468/dsh-client-ui-aqua-patched
++ dsh-client-ui-aqua github:Aliww2468/dsh-client-ui-aqua-patched
+
+$ node tools/cdp-aqua-test.mjs "http://127.0.0.1:<port>/?token=<token>" 15000
+DOM: {"title":"DeepSeek Harness","ambient":true,"fluidCanvas":true,"wallpaperLayer":true,"aquaStyleTags":1,"lsEnabled":null,"bodyChildren":25}
+EXCEPTIONS: []
+CONSOLE_ERRORS: []
+LOG_ERRORS: []
+RESULT: PASS
+
+$ node tools/cdp-eval.mjs "<url>" 12000 @tools/expr-toggle.js
+VALUE: {"cardText":"glass theme card ... master switch on","foundToggle":true,
+        "appliedBefore":true,"switchedOff":true,"appliedAfterOff":false,
+        "canvasAfterOff":false,"flagAfterOff":"false",
+        "appliedAfterOn":true,"flagAfterOn":"true"}
+EXCEPTIONS: []
+```
+
+Read it as: the layer really rendered (`ambient`, `fluidCanvas`, `wallpaperLayer`, one injected stylesheet), the page stayed clean (no exceptions, no console errors, no log errors), and the master switch genuinely turns the layer **off and back on** (`appliedAfterOff:false` → `appliedAfterOn:true`, with the flag persisted). Output is trimmed to the asserted fields.
+
+`assets/1.png` – `assets/4.png` are upstream's screenshots of the same theme, if you want the visual reference. To reproduce the run above on your own machine: execute the three install commands, then the two harness commands — about a minute, and nothing beyond Node and Chrome is needed.
+## Permissions, external services and compatibility
+
+Audited from the shipped artifacts (`lib/client.js`, `lib/index.js`) — the exact bytes hashed in REPAIR.md §3.
+
+| Question | Answer |
+|---|---|
+| Network calls at runtime | **None.** The browser half contains zero `fetch`, `XMLHttpRequest`, `WebSocket`, `EventSource` or `sendBeacon` occurrences; the node half imports nothing and never touches the network. |
+| Files, credentials, cookies | **None.** No filesystem or credential-service use, no `document.cookie`, no `eval` / `new Function`, no remote code loading. |
+| What it does touch | Injects one `<style>` element and a few decorative DOM nodes (ambient scene, wallpaper layer, edge fades) into the page, plus one settings namespace named `aqua`. That is the entire effect. |
+| Stored state | Only `localStorage` keys under `dsh.ui-aqua.*` (enable flag, mode, blur, frost, backdrop, wallpaper, whale, critters, mesh, spotlight, press, …). A custom wallpaper is kept as a data URL in `localStorage`, so a very large image or video can hit the browser storage quota. |
+| Telemetry / accounts | None. No analytics, no account, no API key. |
+| Install-time code execution | **None.** `package.json` declares no `install` / `postinstall` / `prepare` script and `lib/` ships prebuilt, so `dsh plugin add` never runs package code. |
+| External services | None for the theme itself. Installing reaches GitHub once and needs `git`; on a restricted network an HTTP proxy is required. |
+| Compatibility | Verified on **DSH 0.1.2-rc.1** with host Node v22.21.1 only. Upstream's peer baseline was `^0.1.0-rc.5`; this fork is not tested on other DSH lines. Upstream stopped maintaining the plugin, so a future DSH release can break it again — keep the `dump-config` step in your upgrade routine. |
+| Uninstall | `dsh plugin --profile web remove dsh-client-ui-aqua` then restart. Every visual effect is an effect handle disposed on removal, so the stock UI returns. |
+| License | The upstream **repository is AGPL-3.0** while the npm tarball of the same version declares MIT — an upstream inconsistency (REPAIR.md §5). This fork follows **AGPL-3.0-only**. If AGPL is incompatible with your deployment, do not install it. |
+| Support | A one-off community repair, not upstream maintenance. No warranty; the audited artifact hashes are the only compatibility guarantee. |
 
 ## Usage
 
