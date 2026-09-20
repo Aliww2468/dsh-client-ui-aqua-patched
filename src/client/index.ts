@@ -9,7 +9,11 @@
  * One click on the master switch returns the stock UI (every layer is an
  * effect, disposed on flip).
  */
-import type { ClientContext } from '@deepseek-ai/dsh-client-runtime/client'
+// Type-only (erased at build): `@deepseek-ai/dsh-client-runtime` no longer
+// exists in the DSH 0.1.2 line; the client context type comes from the vendored
+// cordis package, with the service merges contributed by the client packages
+// imported below.
+import type { Context as ClientContext } from '@deepseek-ai/cordis'
 import type { BoundActions } from '@deepseek-ai/dsh-client-ui-slots'
 // Type-only: pulls the `settings.plugin.item` SlotMap merge.
 import type {} from '@deepseek-ai/dsh-client-ui-settings-plugins/client'
@@ -171,9 +175,14 @@ export function apply(ctx: ClientContext): void {
   }
 
   // Master switch card in the Plugins configurable tab.
+  // `key` is what DSH 0.1.2 dispatches on: since the slot became keyed, the tab
+  // renders one card per settings namespace the host serves, so the key has to
+  // match the namespace the node half registers (`aqua`) or the card silently
+  // never renders. `id` is kept for the older list-shaped slot.
   ctx.slots.inject('settings.plugin.item', () => ctx.slots.register({
     name: 'settings.plugin.item',
     id: 'aqua',
+    key: 'aqua',
     order: 5,
     store: pluginStore,
     locale: NS,

@@ -1,3 +1,19 @@
+> **非官方修补分支 —— 已修复以适配 DSH 0.1.2-rc.1。**
+>
+> 上游 `dsh-client-ui-aqua@1.3.1`（npm，2026-08-17）与上游仓库 HEAD 在 DSH 0.1.2 线上
+> 均无法工作。本分支修复了三处独立缺陷，并已在 DSH 0.1.2-rc.1（宿主 Node v22.21.1）
+> 上完成端到端验证：主题生效、Appearance 控件完整渲染、「插件」页总开关卡片出现且可用。
+> 诊断、逐项改动、证据与测试脚本见 **[REPAIR.md](REPAIR.md)**。
+>
+> ```sh
+> dsh plugin --profile web add github:<owner>/<repo>   # 之后重启 dsh web
+> ```
+>
+> 与上游作者无隶属、无背书、无维护关系。按上游仓库 `LICENSE` 以
+> **AGPL-3.0-only** 分发（同版本 npm 包含的却是 MIT，见 REPAIR.md §5）。
+> `src/` 的改动此处未经类型检查（上游仓库无法独立构建），随包 `lib/` 产物是经过验证的
+> 1.3.1 构建就地打补丁后的结果。
+
 # @deepseek-ai/dsh-client-ui-aqua
 
 [English](README.md) | 中文

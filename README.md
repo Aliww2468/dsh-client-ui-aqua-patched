@@ -1,3 +1,23 @@
+> **Unofficial patched fork — repaired for DSH 0.1.2-rc.1.**
+>
+> Upstream `dsh-client-ui-aqua@1.3.1` (npm, 2026-08-17) and the upstream repository
+> HEAD do not work on the DSH 0.1.2 line. This fork fixes three independent defects
+> and is verified end-to-end on DSH 0.1.2-rc.1 (host Node v22.21.1): the theme
+> applies, the Appearance controls render, and the Plugins-tab master switch
+> appears and works. Read **[REPAIR.md](REPAIR.md)** for the diagnosis, the exact
+> changes, the evidence and the test harness.
+>
+> ```sh
+> dsh plugin --profile web add github:<owner>/<repo>   # then restart dsh web
+> ```
+>
+> Not affiliated with, endorsed by, or maintained by the upstream author.
+> Distributed under **AGPL-3.0-only**, following the upstream repository
+> `LICENSE`; the npm tarball of the same version declares MIT instead — see
+> REPAIR.md §5. `src/` edits are not type-checked here (upstream's tree cannot be
+> built standalone) and the shipped `lib/` artifacts are the verified 1.3.1 build
+> patched in place.
+
 # @deepseek-ai/dsh-client-ui-aqua
 
 English | [中文](README.zh.md)

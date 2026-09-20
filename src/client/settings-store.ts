@@ -3,7 +3,11 @@
  * knobs and the backdrop source). The plugin's apply-world change listener is
  * the only writer; the row component reads via props.useStore.
  */
-import { defineStore, type EngineStoreHandle } from '@deepseek-ai/dsh-client-runtime/client'
+// Was `@deepseek-ai/dsh-client-runtime/client`: that package was removed in the
+// DSH 0.1.2 line and `defineStore` is exported by `@deepseek-ai/dsh-client-store`
+// now (DSH 0.1.2-rc.1 ships it in the web shell's static module table, so the
+// browser half resolves it without any node_modules entry).
+import { defineStore, type EngineStoreHandle } from '@deepseek-ai/dsh-client-store'
 
 /** Store state mirrored from the Aqua settings scope. */
 export interface AquaRowState {
