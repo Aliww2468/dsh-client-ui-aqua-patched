@@ -1,4 +1,5 @@
-> **Unofficial patched fork — DSH 0.2.1-rc.3 support in `1.3.1-patch.2`.**
+> **Unofficial patched fork — `1.3.1-patch.3` fixes desktop background and empty-header rendering on DSH 0.2.1-rc.3.**
+> Desktop fix and validation scope: [Desktop layout repair](REPAIR-DESKTOP.md).
 > Upstream `dsh-client-ui-aqua@1.3.1` (npm, 2026-08-17) and the upstream repository HEAD
 > do not work on the DSH 0.1.2 line. The original repair was verified on
 > DSH 0.1.2-rc.1; patch.2 adapts installation, settings and icons for 0.2.1-rc.3.

@@ -34,6 +34,15 @@
   background: transparent;
 }
 
+/* Desktop 0.2 paints the Windows/macOS main column behind the conversation,
+   and macOS also paints the right column. Clearing the inner conversation
+   alone leaves an opaque slab over the ambient layer. Keep column geometry,
+   clipping and the native titlebar/drag region intact. */
+[data-dsh-aqua] [data-dsh-frame] > [class*='centerCol'],
+[data-dsh-aqua] [data-dsh-frame] > [data-rightbar-col] {
+  background: transparent;
+}
+
 [data-dsh-aqua] [data-phase],
 [data-dsh-aqua] [data-dsh-details] {
   background: transparent;
@@ -522,8 +531,11 @@ html[data-dsh-float][data-dsh-aqua-wallpaper][data-dsh-aqua-media='video'] body[
 
 /* ---------- Session header: a detached glass card, same recipe as the
    composer. The bottom edge opens into the chat —no bottom border and a
-   shallow shadow, so the original header/chat divider line is gone. ---------- */
-[data-dsh-float] header {
+   shallow shadow, so the original header/chat divider line is gone.
+   A sessionless home header is only a host drag/leading-controls seat. Leave
+   its stock geometry and controls intact instead of drawing an empty card.
+   :where keeps the old specificity for populated session headers. ---------- */
+[data-dsh-float] header:where(:not([class*='headerSessionless'])) {
   margin: 12px 16px 0;
   padding: 10px 16px 8px;
   border: 1px solid rgba(19, 45, 83, 0.26);
@@ -536,11 +548,11 @@ html[data-dsh-float][data-dsh-aqua-wallpaper][data-dsh-aqua-media='video'] body[
   backdrop-filter: blur(var(--dsh-aqua-blur, 14px));
 }
 
-[data-dsh-float] header::after {
+[data-dsh-float] header:where(:not([class*='headerSessionless']))::after {
   display: none;
 }
 
-[data-dsh-float] body[data-ds-dark-theme] header {
+[data-dsh-float] body[data-ds-dark-theme] header:where(:not([class*='headerSessionless'])) {
   border-color: rgba(148, 180, 220, 0.32);
   border-bottom-color: transparent;
   background: var(--dsh-aqua-glass-card-dark);
@@ -552,7 +564,7 @@ html[data-dsh-float][data-dsh-aqua-wallpaper][data-dsh-aqua-media='video'] body[
 /* Collapsed: the floating rail reaches 12px into the chat gutter, so the
    header card steps right (28px inset = 16px clear of the rail's edge) —
    the sidebar keeps its geometry, the top bar does the adjusting. */
-[data-dsh-float] [data-dsh-frame][data-sidebar-collapsed] header {
+[data-dsh-float] [data-dsh-frame][data-sidebar-collapsed] header:where(:not([class*='headerSessionless'])) {
   margin-left: 28px;
 }
 

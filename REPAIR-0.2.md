@@ -1,5 +1,8 @@
 # Aqua patch.2 — DSH 0.2.1-rc.3 compatibility
 
+This is the patch.2 compatibility record. The current **1.3.1-patch.3** also
+fixes desktop rendering; see [Desktop layout repair](REPAIR-DESKTOP.md).
+
 Version: **1.3.1-patch.2**. Validation date: **2026-10-29**.
 The earlier [patch.1 report](REPAIR.md) is retained as historical evidence.
 
