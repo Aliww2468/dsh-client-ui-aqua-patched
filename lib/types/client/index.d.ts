@@ -5,7 +5,7 @@
  * section (configurable tab) — one click returns the stock UI (every layer
  * is an effect, disposed on flip).
  */
-import type { ClientContext } from '@deepseek-ai/dsh-client-runtime/client';
+import type { Context as ClientContext } from '@deepseek-ai/cordis';
 import './aqua.module.css';
 /** Required services: theme override stack plus the settings-card surfaces. */
 export declare const inject: string[];

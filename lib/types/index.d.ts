@@ -4,15 +4,16 @@
  * Upstream this half is an empty `apply()`. Since DSH 0.1.2-rc.1 the settings
  * page dispatches plugin cards by served settings namespace, so the host half
  * registers an empty pass-through namespace (`aqua`) that makes the browser
- * half's master-switch card dispatchable. See REPAIR.md for the full story.
+ * half's master-switch card dispatchable. On DSH 0.2 this API is absent and
+ * the client uses plugins.bundle.config instead. See REPAIR.md.
  */
 /** Settings namespace the browser half's card is keyed by. */
-export declare const AQUA_NAMESPACE: "aqua";
+declare const AQUA_NAMESPACE: "aqua";
 /** Minimal host context surface used by this half. */
 export interface HostContext {
     inject?: (deps: string[], callback: (scope: {
         settings: {
-            register: (name: string, schema: unknown, options: {
+            register?: (name: string, schema: unknown, options: {
                 base: Record<string, unknown>;
             }) => unknown;
         };

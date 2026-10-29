@@ -1,5 +1,12 @@
 # Changelog
 
+## v1.3.1-patch.2
+
+- 新增 DSH 0.2.1-rc.3 的精确兼容声明，保留原 0.1 依赖范围，无需 allow-version。
+- 适配新的 `plugins.bundle.config` 设置入口，保留旧内核的 `settings.plugin.item`。
+- 在新内核跳过已移除的 `settings.register()`；使用本地勾选图标替代已移除的 `IconCheckOutline16`。
+- 验证安装、开关、设置参数与刷新持久化；详情和验证边界见 [REPAIR-0.2.md](REPAIR-0.2.md)。
+
 ## v1.3.0
 
 - 视频壁纸全面升级：浏览器原生解码、无进度条、循环播放、铺满裁剪，窗口缩放实时自适应

@@ -1,6 +1,7 @@
-> **非官方修补分支 —— 已修复以适配 DSH 0.1.2-rc.1。**
+> **非官方修补分支 —— `1.3.1-patch.2` 新增 DSH 0.2.1-rc.3 适配。**
 > 上游 `dsh-client-ui-aqua@1.3.1`（npm，2026-08-17）与上游仓库 HEAD 在 DSH 0.1.2 线上均无法工作。
-> 本分支修复了三处独立缺陷，并已在 DSH 0.1.2-rc.1（宿主 Node v22.21.1）上完成端到端验证。
+> 最初修补版已在 DSH 0.1.2-rc.1 验证；patch.2 继续适配 0.2.1-rc.3 的版本校验、设置入口与图标。
+> 本次验证范围见 **[DSH 0.2 修复说明](REPAIR-0.2.md)**。
 > 诊断、逐项改动、证据与注意事项见 **[REPAIR.md](REPAIR.md)**。与上游作者无隶属、无背书、
 > 无维护关系；按 **AGPL-3.0-only** 分发（见[许可证](#许可证)）。本分支所依据的上游源码说明
 > 见[上游与本分支](#上游与本分支)。
@@ -46,7 +47,9 @@ dsh plugin --profile web remove dsh-client-ui-aqua
 
 ### 环境要求
 
-DSH **0.1.2-rc.1**（本分支的验证基线，宿主 Node v22.21.1）。安装会往 profile 的
+DSH **0.2.1-rc.3**（DSH NEXT 2.0.20-next 内置内核）：已用该安装包中的运行时和 Node v24.21.0 在隔离的 web profile 实测。
+保留原 **0.1.2-rc.1** 依赖范围与旧设置入口；patch.2 未重跑旧内核的浏览器测试。
+本次只增加精确版本 `0.2.1-rc.3`，其它 0.2 版本需重新验证。安装会往 profile 的
 `dsh.profile.bundles` 追加 `dsh-client-ui-aqua`，因此**必须重启宿主**主题才会加载。
 
 ### ⚠️ 不要安装 npm 上的裸包名
@@ -60,7 +63,7 @@ dsh plugin --profile web add dsh-client-ui-aqua   # ← 装到的是上游未修
 `github:` 形式（或本地克隆形式），直到上游修好为止。详见 [REPAIR.md](REPAIR.md)。
 ## 它能给你什么
 
-以下全部是**上游的设计**，本分支原样沿用——本分支只修掉了导致它加载失败的三处缺陷（见 [REPAIR.md](REPAIR.md)）。
+以下是**上游的主题设计**；本分支的兼容性适配见 [REPAIR.md](REPAIR.md) 和 [REPAIR-0.2.md](REPAIR-0.2.md)。
 
 - **双模式**：**云母效果**把布局改成悬浮玻璃卡片（模糊度、磨砂度可调）；**兼容模式**保持原版排版一字不动，只把材质换成通用玻璃，其他插件的界面也会自动玻璃化
 - **背景自由**：流体板（颜色可调）或自定义壁纸（铺满页面、比例不变，可单独调模糊度/磨砂度）；浅色壁纸配浅色模式、深色壁纸配深色模式观感更佳
@@ -72,7 +75,7 @@ dsh plugin --profile web add dsh-client-ui-aqua   # ← 装到的是上游未修
 
 ## 可见的证明
 
-以下是**真实输出**，不是示意图：由 `tools/` 里那套零依赖测试夹具，在临时的 DSH 0.1.2-rc.1 实例（宿主 Node v22.21.1）上跑出，安装的是本仓库已发布的产物：
+以下保留 patch.1 在临时 DSH 0.1.2-rc.1 实例（宿主 Node v22.21.1）上的历史输出；patch.2 在 0.2.1-rc.3 上的验证结果见 [REPAIR-0.2.md](REPAIR-0.2.md)。
 
 ```console
 $ dsh plugin --profile web add github:Aliww2468/dsh-client-ui-aqua-patched
@@ -110,7 +113,7 @@ EXCEPTIONS: []
 | 遥测 / 账号 | 无。没有统计上报、不需要账号、不需要 API key。 |
 | 安装期执行代码 | **无。** `package.json` 未声明 `install` / `postinstall` / `prepare`，且 `lib/` 随包提供预构建产物，因此 `dsh plugin add` 不会执行任何包脚本。 |
 | 外部服务 | 主题本身不依赖任何外部服务。安装过程需访问一次 GitHub 且需要 `git`；受限网络下需要 HTTP 代理。 |
-| 兼容性 | 仅在 **DSH 0.1.2-rc.1**（宿主 Node v22.21.1）上验证通过。上游的 peer 基线是 `^0.1.0-rc.5`，本分支未在其它 DSH 线上测试。上游已停止维护，未来 DSH 版本可能再次使其失效——建议把 `dump-config` 那一步固定进你的升级流程。 |
+| 兼容性 | patch.2 已在 **DSH 0.2.1-rc.3** 的隔离 web profile 验证；patch.1 的历史基线是 **0.1.2-rc.1**。保留旧依赖范围，只增加实测的新版本，未放行全部 0.2.x。详见 [验证范围](REPAIR-0.2.md)。 |
 | 卸载 | `dsh plugin --profile web remove dsh-client-ui-aqua` 后重启。所有视觉效果都是可释放的 effect，移除即回收，原生界面随之还原。 |
 | 维护 | 一次性的社区修复，非上游维护。无任何担保；唯一可依赖的兼容性承诺是那两组产物哈希。 |
 
@@ -118,7 +121,8 @@ EXCEPTIONS: []
 
 - **宿主半导出 `apply(ctx)`** —— `lib/index.js` 提供 `export { apply }` 与
   `function apply(ctx)`：它注册浏览器半卡片所依的 key（设置命名空间 `aqua`），这正是
-  DSH 0.1.2 上总开关能被派发的原因。
+  DSH 0.1.2 上总开关能被派发的原因。0.2 跳过已移除的注册接口，改由客户端的
+  `plugins.bundle.config` 槽位提供总开关。
 - **浏览器半导出 `apply` + `inject`** —— `lib/client.js` 是 lazy-CJS 的
   `window.__ModuleLoader__.load({ id: "dsh-client-ui-aqua", factory })` 产物，工厂返回
   `exports.apply` 与 `exports.inject = ['theme', 'slots', 'locale']`。
@@ -130,13 +134,13 @@ EXCEPTIONS: []
 
 ## 使用
 
-刷新 Web 界面。Aqua **默认开启**；总开关在 **设置 → 插件 → 玻璃主题**（形状与其他插件卡片一致），其余全部调节在 **设置 → 通用设置 → 外观** 的正下方（无独立标题）：模式、模糊度/磨砂度（云母模式）、流体颜色、背景亮度、背景（流体/壁纸）、壁纸设置，以及粒子鲸鱼开关。总开关关闭时，外观下方的整块调节自动隐藏。
+刷新 Web 界面。Aqua **默认开启**。DSH 0.2 的总开关在 **插件 → dsh-client-ui-aqua → 玻璃主题**；DSH 0.1 仍在 **设置 → 插件 → 玻璃主题**。其余调节在 **设置 → 通用设置 → 外观** 的正下方：模式、模糊度/磨砂度（云母模式）、流体颜色、背景亮度、背景（流体/壁纸）、壁纸设置与环境装饰。总开关关闭时，外观下方的整块调节自动隐藏。
 
 ## 上游与本分支
 
 本仓库是 [`WYH66666666/DSH-Transparent-UI-Plugin`](https://github.com/WYH66666666/DSH-Transparent-UI-Plugin) 在提交 `d94431a`（2026-08-22）处的分支，依据已发布的 npm 包 `dsh-client-ui-aqua@1.3.1` 建立。上游在自己的 monorepo 内把包命名为 `@deepseek-ai/dsh-client-ui-aqua`；发布到 npm 的名字是不带 scope 的 `dsh-client-ui-aqua`，本分支沿用该名字以便作为可直接替换的版本。
 
-**所有设计与用户可见行为都是上游的成果。** 本分支只改了三件事——浏览器半 import 的模块、其设置卡片注册所用的 key、以及提供设置命名空间的宿主半——并把结果作为经过审计的产物发布。完整 diff 见 [REPAIR.md](REPAIR.md) §2，验证见 §3。
+**主题设计来自上游。** 本分支适配宿主接口与设置入口；最初三项修复见 [REPAIR.md](REPAIR.md)，0.2 适配见 [REPAIR-0.2.md](REPAIR-0.2.md)。
 
 ### 上游自己的提醒——它针对的是上游的构建，不是本分支
 

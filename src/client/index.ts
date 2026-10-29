@@ -17,9 +17,11 @@ import type { Context as ClientContext } from '@deepseek-ai/cordis'
 import type { BoundActions } from '@deepseek-ai/dsh-client-ui-slots'
 // Type-only: pulls the `settings.plugin.item` SlotMap merge.
 import type {} from '@deepseek-ai/dsh-client-ui-settings-plugins/client'
+// Type-only: pulls the DSH 0.2 `plugins.bundle.config` SlotMap merge.
+import type {} from '@deepseek-ai/dsh-client-ui-plugin-manager/client'
 // Type-only: pulls the `settings.general.item` SlotMap merge.
 import type {} from '@deepseek-ai/dsh-client-ui-settings/client'
-import { AquaPluginCard, type AquaPluginCardInjected } from './AquaPluginCard.tsx'
+import { AquaPluginCard, AquaPluginPage, type AquaPluginCardInjected } from './AquaPluginCard.tsx'
 import { AquaAppearanceRow, type AquaAppearanceRowInjected } from './AquaAppearanceRow.tsx'
 import { createAquaRowStore, type AquaSettingsPayload } from './settings-store.ts'
 import { en, NS, zh } from './locales.ts'
@@ -188,6 +190,17 @@ export function apply(ctx: ClientContext): void {
     locale: NS,
     inject: pluginInjected,
   }, AquaPluginCard))
+
+  // DSH 0.2 removed settings.plugin.item and dispatches package configuration
+  // by package name. inject() waits for the slot, so both generations can use
+  // their own entry without version parsing or registering undeclared slots.
+  ctx.slots.inject('plugins.bundle.config', () => ctx.slots.register({
+    name: 'plugins.bundle.config',
+    key: 'dsh-client-ui-aqua',
+    store: pluginStore,
+    locale: NS,
+    inject: pluginInjected,
+  }, AquaPluginPage))
 
   // Glass knobs row in the General section, directly under Appearance (10).
   ctx.slots.inject('settings.general.item', () => ctx.slots.register({

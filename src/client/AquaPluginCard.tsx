@@ -1,14 +1,13 @@
 /**
  * Aqua card registered into the Plugins settings section's configurable tab
- * (`settings.plugin.item`): the master on/off switch — name, description, and
+ * (`settings.plugin.item` on DSH 0.1, `plugins.bundle.config` on DSH 0.2):
+ * the master on/off switch — name, description, and
  * one toggle, in the section's card language. Every other knob lives in the
  * General settings' Appearance row, so the card stays the same shape as the
  * other plugin cards.
  */
-import { IconCheckOutline16 } from '@deepseek-ai/dsh-client-ui-primitives'
-import type { InjectFace, PropsLocale, PropsRuntime, PropsStore } from '@deepseek-ai/dsh-client-ui-slots'
-// Type-only: pulls the `settings.plugin.item` SlotMap merge.
-import type {} from '@deepseek-ai/dsh-client-ui-settings-plugins/client'
+import { AquaCheckIcon } from './AquaCheckIcon.tsx'
+import type { InjectFace, PropsLocale, PropsStore } from '@deepseek-ai/dsh-client-ui-slots'
 import type { createAquaRowStore } from './settings-store.ts'
 import css from './AquaPluginCard.module.css'
 
@@ -18,9 +17,9 @@ export interface AquaPluginCardInjected {
   setEnabled: (enabled: boolean) => void
 }
 
-/** Full component props: runtime share + store share + locale seat + injected face. */
+/** Only the shares this card consumes, shared by the legacy and modern slots. */
 export type AquaPluginCardComponentProps =
-  PropsRuntime<'settings.plugin.item'> & PropsStore<ReturnType<typeof createAquaRowStore>>
+  PropsStore<ReturnType<typeof createAquaRowStore>>
   & PropsLocale<'settings.aqua'> & InjectFace<AquaPluginCardInjected>
 
 /**
@@ -45,11 +44,20 @@ export function AquaPluginCard(props: AquaPluginCardComponentProps) {
           onClick={() => { setEnabled(!enabled) }}
         >
           <span className={css.check}>
-            {enabled && <IconCheckOutline16 />}
+            {enabled && <AquaCheckIcon />}
           </span>
           {enabled ? t('aqua.enable') : t('aqua.disable')}
         </button>
       </div>
     </li>
+  )
+}
+
+/** The modern package-config slot is a section, so supply the card's list parent. */
+export function AquaPluginPage(props: AquaPluginCardComponentProps) {
+  return (
+    <ul style={{ margin: 0, padding: 0, listStyle: 'none' }}>
+      <AquaPluginCard {...props} />
+    </ul>
   )
 }

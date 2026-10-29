@@ -1,5 +1,18 @@
 # PUBLISH.md — push this fork to GitHub
 
+## 2026-10-29 — patch.2 update
+
+Version `1.3.1-patch.2` adds support for DSH `0.2.1-rc.3`. Source, prebuilt
+artifacts, compatibility checks and the updated installation documentation
+are committed together. See [REPAIR-0.2.md](REPAIR-0.2.md) for the validation
+scope and the hashes of the shipped artifacts. The install source remains
+`github:Aliww2468/dsh-client-ui-aqua-patched`.
+
+The original publication record below describes patch.1; its hashes and
+version-specific claims belong to that historical release.
+
+---
+
 Runbook that was executed to publish this repository, kept as a record. The three
 listing requirements are covered first.
 

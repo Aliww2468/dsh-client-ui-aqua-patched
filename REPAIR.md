@@ -1,5 +1,8 @@
 # REPAIR.md — Aqua on DSH 0.1.2-rc.1
 
+> Historical patch.1 report: its hashes and browser results describe that release.
+> For patch.2 on DSH 0.2.1-rc.3, see [REPAIR-0.2.md](REPAIR-0.2.md).
+
 **This is an unofficial patched fork.** It is not affiliated with, endorsed by, or
 maintained by the upstream author (`WYH66666666`). It exists because upstream
 `dsh-client-ui-aqua` (npm `1.3.1`, published 2026-08-17; repo HEAD `d94431a9`,

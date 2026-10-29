@@ -14,9 +14,11 @@
  *
  * The stored values are not the point — Aqua keeps them in localStorage behind
  * the browser half. This half therefore registers an empty pass-through
- * namespace whose only job is to make the card dispatchable. Its schema is
+ * namespace whose only job is to make the card dispatchable on DSH 0.1. Its schema is
  * duck-typed to what the settings seam calls on it (callable plus `toJSON`), so
- * this package still needs no `@deepseek-ai/*` import at runtime.
+ * this package still needs no `@deepseek-ai/*` import at runtime. DSH 0.2 removed
+ * this registration API; its client uses `plugins.bundle.config` instead and
+ * needs no host settings namespace.
  */
 
 /** Settings namespace the browser half's card is keyed by. */
@@ -33,7 +35,7 @@ interface PassThroughSchema {
 
 /** Minimal host context surface used here (avoids a runtime package import). */
 interface HostContext {
-  inject?: (deps: string[], callback: (scope: { settings: { register: (name: string, schema: unknown, options: { base: Record<string, unknown> } ) => unknown } }) => void) => void
+  inject?: (deps: string[], callback: (scope: { settings: { register?: (name: string, schema: unknown, options: { base: Record<string, unknown> } ) => unknown } }) => void) => void
 }
 
 const passThroughSchema = ((value: unknown) => ({ ...((value ?? {}) as Record<string, unknown>) })) as PassThroughSchema
@@ -51,6 +53,8 @@ passThroughSchema.toJSON = () => ({
 export function apply(ctx: HostContext): void {
   if (typeof ctx.inject !== 'function') return
   ctx.inject(['settings'], (scope) => {
+    // DSH 0.2 derives forms from plugin Config and has no register() API.
+    if (typeof scope.settings.register !== 'function') return
     try {
       scope.settings.register(AQUA_NAMESPACE, passThroughSchema, { base: {} })
     } catch (error) {
