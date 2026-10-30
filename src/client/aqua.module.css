@@ -89,6 +89,15 @@
   background: none;
 }
 
+/* The active composer wrapper fills its scrollport. Hover tilt scales that
+   invisible wrapper past the available width, creating a horizontal scrollbar
+   and shifting the bottom input row. Clip only the composer's horizontal
+   overflow; leave vertical popovers/shadows and transcript scrolling alone.
+   Unlike hidden, clip does not turn the sticky seat into a scroll container. */
+[data-dsh-aqua][data-dsh-float] [data-composer-seat] {
+  overflow-x: clip;
+}
+
 /* ---------- Ambient scene: the living deep-sea layer (injected by the
    plugin). A deepseek.com-style fluid board —top light wash plus three
    slowly drifting blurred fluid masses —with marine life riding over it. ---------- */
